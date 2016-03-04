@@ -1,0 +1,84 @@
+{
+    "docs": [
+        {
+            "location": "/", 
+            "text": "TensorProb\n\n\nYou've found the documentation for \nTensorProb\n, a probabalistic\ngraphical modeling and inference framework based on\n\nTensorFlow\n.\n\n\nTensorProb is currently in development.\nWe are working on implementing the following features:\n\n\n\n\nHigh flexibility in defining the statistical model\n\n\nModels are defined in a self-contained \nwith\n block\n\n\nSeamless switching between frequentist and bayesian paradigms\n\n\nFinding the maximum likelihood estimate or MAP estimate using a variety of optimizers\n\n\nFlexible sampling using different MCMC backends\n\n\nAn extensive library of probability distributions\n\n\nAnalytic and numeric marginalization of probability distributions\n to support missing data and physical boundaries\n\n\nConvolution of probability distributions\n\n\nFunctions for calculating confidence and credible intervals\n\n\nFunctions for hypothesis testing\n\n\n\n\nBenefits of using TensorFlow as a backend include\n\n\n\n\nFast evaluation of the model using multiple CPU threads and/or GPUs\n\n\nDefining new probability distributions using symbolic variables in\n   Python\n\n\nPossibility to write new optimized operators in C++ and load them\n   dynamically", 
+            "title": "Home"
+        }, 
+        {
+            "location": "/#tensorprob", 
+            "text": "You've found the documentation for  TensorProb , a probabalistic\ngraphical modeling and inference framework based on TensorFlow .  TensorProb is currently in development.\nWe are working on implementing the following features:   High flexibility in defining the statistical model  Models are defined in a self-contained  with  block  Seamless switching between frequentist and bayesian paradigms  Finding the maximum likelihood estimate or MAP estimate using a variety of optimizers  Flexible sampling using different MCMC backends  An extensive library of probability distributions  Analytic and numeric marginalization of probability distributions\n to support missing data and physical boundaries  Convolution of probability distributions  Functions for calculating confidence and credible intervals  Functions for hypothesis testing   Benefits of using TensorFlow as a backend include   Fast evaluation of the model using multiple CPU threads and/or GPUs  Defining new probability distributions using symbolic variables in\n   Python  Possibility to write new optimized operators in C++ and load them\n   dynamically", 
+            "title": "TensorProb"
+        }, 
+        {
+            "location": "/model/", 
+            "text": "This is the documentation for the model class\n\n\nAPI documentation\n\n\n[source]\n\n\nModel\n\n\ntensorprob.model.Model(name=None)\n\n\n\n\nThe model class is the primary interface of TensorProb. It allows you to\ndeclare random variables, describe the (directed) probabalistic\nrelationships between them, provide observations for some of them, and\nperform inference on the unobserved (latent) variables.\n\n\nModels are agnostic as to whether you want to follow frequentist or\nbayesian paradigms of inference. They allow you to find the maximum\nlikelihood or maximum a posteriori estimate for you model given the data\nusing the \n.fit\n method, or to sample from the likelihood/posterior using\nMCMC techniques (See the \n.mcmc\n method).\n\n\nRandom variables can only be instantiated inside the \nwith\n context of a model,\nand each model can only have a single \nwith\n block.\n\n\nInside the \nwith\n context of the model, you can define variables and their\nrelationships by telling a \"generative story\".\nFor example, defining a new variable \nX\n with \nX ~ Normal(0, 1)\n is written as\n\nX = Normal(0, 1)\n.\nRandom variables can then be plugged in as the conditional parameters of\nother distributions.\n\n\nAfter the \n.initialize\n method is called, the model has a \nstate\n for each latent\nvariable, which is used for the initial parameters in the \n.fit\n and \n.mcmc\n methods,\nas well as when using the \n.pdf\n method.\n\n\nParameters\n\n\nname : string, default None\nAn optional name for this model. This is currently not used, but\nshould be useful when working with multiple models simultaneously in\nthe future.\n\n\nExamples\n\n\n\n\n\n\n\n\nwith Model() as model:\n... n = Parameter(lower=0)\n... N = Poisson(n)\n... model.observed(N)\n... model.initialize({ n: 10 })\n... model.fit([20])\n\n\n\n\n\n\n\n\nMethods\n\n\nassign(assign_dict)\n\n\n\n\nSet the state of specific unobserved (latent) variables to the specified\nvalues.\n\n\nParameters\n\n\nassign_dict : dict\nA dictionary from random variables to values.\nThis has to specify a value for a subset of the unobserved (latent)\nvariables of the model.\n\n\nfit()\n\n\n\n\nPerform a maximum likelihood or maximum a posteriori estimate\nusing one of the available function optimization backends.\n\n\nParameters\n\n\nargs : lists or ndarrays\nThe datasets from which we want to infer the values of unobserved\n(latent) variables. The arguments don't need to have the same\nshape.\nuse_gradient : bool\nWhether the optimizer should use gradients derived using\nTensorFlow. Some optimizers may not be able to use gradient\ninformation, in which case this argument is ignored.\noptimizer : subclass of BaseOptimizer\nThe optimization backend to use.\nSee the \noptimizers\n module for which optimizers are available.\n\n\ninitialize(assign_dict)\n\n\n\n\nAllows you to specify the initial state of the unobserved (latent)\nvariables.\n\n\nCan only be called after observed variables have been declared with\n\n.observed\n.\n\n\nParameters\n\n\nassign_dict : dict\nA dictionary from random variables to values.\nThis has to specify a value for all unobserved (latent) variables\nof the model.\n\n\nmcmc()\n\n\n\n\nPerform MCMC sampling of the possible values of unobserved (latent)\nvariables using one of the available sampling backends.\n\n\nParameters\n\n\nargs : lists or ndarrays\nThe datasets from which we want to infer the values of unobserved\n(latent) variables. The arguments don't need to have the same\nshape.\nsampler : subclass of BaseSampler\nThe sampling backend to use.\nSee the \nsamplers\n module for which samplers are available.\n\n\nnll()\n\n\n\n\nThe negative log-likelihood for all passed datasets.\n\n\nParameters\n\n\nargs : lists or ndarrays\nThe datasets for which we want to know the value of the negative\nlog-likelihood density function. The arguments don't need to have\nthe same shape.\n\n\nobserved()\n\n\n\n\nDeclares the random variables in \nargs\n as observed, which means\nthat data is available for them.\n\n\nThe order in which variables are used here defines the order in which\nthey will have to be passed in later when using methods like \n.fit\n or\n\n.mcmc\n. All variables in the model that are not declared as observed\nare automatically declared as \nlatent\n and become the subject of\ninference.\n\n\n.observed\n can only be called once per \nModel\n and is a requirement\nfor calling \n.initialize\n.\n\n\nParameters\n\n\n*args : random variables\nThe random variables for which data is available.\n\n\npdf()\n\n\n\n\nThe probability density function for observing a single entry\nof each random variable that has been declared as observed.\n\n\nThis allows you to easily plot the probability density function.\n\n\nParameters\n\n\nargs : lists or ndarrays\nThe entries for which we want to know the values of the probability\ndensity function. All arguments must have the same shape.\n\n\nExamples\n\n\n\n\n\n\n\n\nimport numpy as np\nimport matplotlib.pyplot as plt\nxs = np.linspace(-1, 1, 200)\nplt.plot(xs, model.pdf(xs))", 
+            "title": "Model"
+        }, 
+        {
+            "location": "/model/#api-documentation", 
+            "text": "[source]", 
+            "title": "API documentation"
+        }, 
+        {
+            "location": "/model/#model", 
+            "text": "tensorprob.model.Model(name=None)  The model class is the primary interface of TensorProb. It allows you to\ndeclare random variables, describe the (directed) probabalistic\nrelationships between them, provide observations for some of them, and\nperform inference on the unobserved (latent) variables.  Models are agnostic as to whether you want to follow frequentist or\nbayesian paradigms of inference. They allow you to find the maximum\nlikelihood or maximum a posteriori estimate for you model given the data\nusing the  .fit  method, or to sample from the likelihood/posterior using\nMCMC techniques (See the  .mcmc  method).  Random variables can only be instantiated inside the  with  context of a model,\nand each model can only have a single  with  block.  Inside the  with  context of the model, you can define variables and their\nrelationships by telling a \"generative story\".\nFor example, defining a new variable  X  with  X ~ Normal(0, 1)  is written as X = Normal(0, 1) .\nRandom variables can then be plugged in as the conditional parameters of\nother distributions.  After the  .initialize  method is called, the model has a  state  for each latent\nvariable, which is used for the initial parameters in the  .fit  and  .mcmc  methods,\nas well as when using the  .pdf  method.", 
+            "title": "Model"
+        }, 
+        {
+            "location": "/model/#parameters", 
+            "text": "name : string, default None\nAn optional name for this model. This is currently not used, but\nshould be useful when working with multiple models simultaneously in\nthe future.", 
+            "title": "Parameters"
+        }, 
+        {
+            "location": "/model/#examples", 
+            "text": "with Model() as model:\n... n = Parameter(lower=0)\n... N = Poisson(n)\n... model.observed(N)\n... model.initialize({ n: 10 })\n... model.fit([20])", 
+            "title": "Examples"
+        }, 
+        {
+            "location": "/model/#methods", 
+            "text": "assign(assign_dict)  Set the state of specific unobserved (latent) variables to the specified\nvalues.", 
+            "title": "Methods"
+        }, 
+        {
+            "location": "/model/#parameters_1", 
+            "text": "assign_dict : dict\nA dictionary from random variables to values.\nThis has to specify a value for a subset of the unobserved (latent)\nvariables of the model.  fit()  Perform a maximum likelihood or maximum a posteriori estimate\nusing one of the available function optimization backends.", 
+            "title": "Parameters"
+        }, 
+        {
+            "location": "/model/#parameters_2", 
+            "text": "args : lists or ndarrays\nThe datasets from which we want to infer the values of unobserved\n(latent) variables. The arguments don't need to have the same\nshape.\nuse_gradient : bool\nWhether the optimizer should use gradients derived using\nTensorFlow. Some optimizers may not be able to use gradient\ninformation, in which case this argument is ignored.\noptimizer : subclass of BaseOptimizer\nThe optimization backend to use.\nSee the  optimizers  module for which optimizers are available.  initialize(assign_dict)  Allows you to specify the initial state of the unobserved (latent)\nvariables.  Can only be called after observed variables have been declared with .observed .", 
+            "title": "Parameters"
+        }, 
+        {
+            "location": "/model/#parameters_3", 
+            "text": "assign_dict : dict\nA dictionary from random variables to values.\nThis has to specify a value for all unobserved (latent) variables\nof the model.  mcmc()  Perform MCMC sampling of the possible values of unobserved (latent)\nvariables using one of the available sampling backends.", 
+            "title": "Parameters"
+        }, 
+        {
+            "location": "/model/#parameters_4", 
+            "text": "args : lists or ndarrays\nThe datasets from which we want to infer the values of unobserved\n(latent) variables. The arguments don't need to have the same\nshape.\nsampler : subclass of BaseSampler\nThe sampling backend to use.\nSee the  samplers  module for which samplers are available.  nll()  The negative log-likelihood for all passed datasets.", 
+            "title": "Parameters"
+        }, 
+        {
+            "location": "/model/#parameters_5", 
+            "text": "args : lists or ndarrays\nThe datasets for which we want to know the value of the negative\nlog-likelihood density function. The arguments don't need to have\nthe same shape.  observed()  Declares the random variables in  args  as observed, which means\nthat data is available for them.  The order in which variables are used here defines the order in which\nthey will have to be passed in later when using methods like  .fit  or .mcmc . All variables in the model that are not declared as observed\nare automatically declared as  latent  and become the subject of\ninference.  .observed  can only be called once per  Model  and is a requirement\nfor calling  .initialize .", 
+            "title": "Parameters"
+        }, 
+        {
+            "location": "/model/#parameters_6", 
+            "text": "*args : random variables\nThe random variables for which data is available.  pdf()  The probability density function for observing a single entry\nof each random variable that has been declared as observed.  This allows you to easily plot the probability density function.", 
+            "title": "Parameters"
+        }, 
+        {
+            "location": "/model/#parameters_7", 
+            "text": "args : lists or ndarrays\nThe entries for which we want to know the values of the probability\ndensity function. All arguments must have the same shape.", 
+            "title": "Parameters"
+        }, 
+        {
+            "location": "/model/#examples_1", 
+            "text": "import numpy as np\nimport matplotlib.pyplot as plt\nxs = np.linspace(-1, 1, 200)\nplt.plot(xs, model.pdf(xs))", 
+            "title": "Examples"
+        }
+    ]
+}

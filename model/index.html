@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <title>Model - TensorProb</title>
+  
+
+  <link rel="shortcut icon" href="../img/favicon.ico">
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Model";
+    var mkdocs_page_input_path = "model.md";
+    var mkdocs_page_url = "/model/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script>
+  <script src="../js/theme.js"></script> 
+
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> TensorProb</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        <ul class="current">
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="..">Home</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Model</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#api-documentation">API documentation</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#model">Model</a></li>
+                
+                    <li><a class="toctree-l4" href="#parameters">Parameters</a></li>
+                
+                    <li><a class="toctree-l4" href="#examples">Examples</a></li>
+                
+                    <li><a class="toctree-l4" href="#parameters_1">Parameters</a></li>
+                
+                    <li><a class="toctree-l4" href="#parameters_2">Parameters</a></li>
+                
+                    <li><a class="toctree-l4" href="#parameters_3">Parameters</a></li>
+                
+                    <li><a class="toctree-l4" href="#parameters_4">Parameters</a></li>
+                
+                    <li><a class="toctree-l4" href="#parameters_5">Parameters</a></li>
+                
+                    <li><a class="toctree-l4" href="#parameters_6">Parameters</a></li>
+                
+                    <li><a class="toctree-l4" href="#parameters_7">Parameters</a></li>
+                
+                    <li><a class="toctree-l4" href="#examples_1">Examples</a></li>
+                
+            
+            </ul>
+        
+    </li>
+<li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">TensorProb</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Model</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        
+          <a href="http://github.com/ibab/tensorprob" class="icon icon-github"> Edit on GitHub</a>
+        
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <p>This is the documentation for the model class</p>
+<h1 id="api-documentation">API documentation</h1>
+<p><span style="float:right;"><a href="https://github.com/ibab/tensorprob/blob/master/tensorprob/model.py#L23">[source]</a></span></p>
+<h1 id="model">Model</h1>
+<pre><code class="python">tensorprob.model.Model(name=None)
+</code></pre>
+
+<p>The model class is the primary interface of TensorProb. It allows you to
+declare random variables, describe the (directed) probabalistic
+relationships between them, provide observations for some of them, and
+perform inference on the unobserved (latent) variables.</p>
+<p>Models are agnostic as to whether you want to follow frequentist or
+bayesian paradigms of inference. They allow you to find the maximum
+likelihood or maximum a posteriori estimate for you model given the data
+using the <code>.fit</code> method, or to sample from the likelihood/posterior using
+MCMC techniques (See the <code>.mcmc</code> method).</p>
+<p>Random variables can only be instantiated inside the <code>with</code> context of a model,
+and each model can only have a single <code>with</code> block.</p>
+<p>Inside the <code>with</code> context of the model, you can define variables and their
+relationships by telling a "generative story".
+For example, defining a new variable <code>X</code> with <code>X ~ Normal(0, 1)</code> is written as
+<code>X = Normal(0, 1)</code>.
+Random variables can then be plugged in as the conditional parameters of
+other distributions.</p>
+<p>After the <code>.initialize</code> method is called, the model has a <em>state</em> for each latent
+variable, which is used for the initial parameters in the <code>.fit</code> and <code>.mcmc</code> methods,
+as well as when using the <code>.pdf</code> method.</p>
+<h2 id="parameters">Parameters</h2>
+<p>name : string, default None
+An optional name for this model. This is currently not used, but
+should be useful when working with multiple models simultaneously in
+the future.</p>
+<h2 id="examples">Examples</h2>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>with Model() as model:
+... n = Parameter(lower=0)
+... N = Poisson(n)
+... model.observed(N)
+... model.initialize({ n: 10 })
+... model.fit([20])</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<h3 id="methods">Methods</h3>
+<pre><code class="python">assign(assign_dict)
+</code></pre>
+
+<p>Set the state of specific unobserved (latent) variables to the specified
+values.</p>
+<h2 id="parameters_1">Parameters</h2>
+<p>assign_dict : dict
+A dictionary from random variables to values.
+This has to specify a value for a subset of the unobserved (latent)
+variables of the model.</p>
+<pre><code class="python">fit()
+</code></pre>
+
+<p>Perform a maximum likelihood or maximum a posteriori estimate
+using one of the available function optimization backends.</p>
+<h2 id="parameters_2">Parameters</h2>
+<p>args : lists or ndarrays
+The datasets from which we want to infer the values of unobserved
+(latent) variables. The arguments don't need to have the same
+shape.
+use_gradient : bool
+Whether the optimizer should use gradients derived using
+TensorFlow. Some optimizers may not be able to use gradient
+information, in which case this argument is ignored.
+optimizer : subclass of BaseOptimizer
+The optimization backend to use.
+See the <code>optimizers</code> module for which optimizers are available.</p>
+<pre><code class="python">initialize(assign_dict)
+</code></pre>
+
+<p>Allows you to specify the initial state of the unobserved (latent)
+variables.</p>
+<p>Can only be called after observed variables have been declared with
+<code>.observed</code>.</p>
+<h2 id="parameters_3">Parameters</h2>
+<p>assign_dict : dict
+A dictionary from random variables to values.
+This has to specify a value for all unobserved (latent) variables
+of the model.</p>
+<pre><code class="python">mcmc()
+</code></pre>
+
+<p>Perform MCMC sampling of the possible values of unobserved (latent)
+variables using one of the available sampling backends.</p>
+<h2 id="parameters_4">Parameters</h2>
+<p>args : lists or ndarrays
+The datasets from which we want to infer the values of unobserved
+(latent) variables. The arguments don't need to have the same
+shape.
+sampler : subclass of BaseSampler
+The sampling backend to use.
+See the <code>samplers</code> module for which samplers are available.</p>
+<pre><code class="python">nll()
+</code></pre>
+
+<p>The negative log-likelihood for all passed datasets.</p>
+<h2 id="parameters_5">Parameters</h2>
+<p>args : lists or ndarrays
+The datasets for which we want to know the value of the negative
+log-likelihood density function. The arguments don't need to have
+the same shape.</p>
+<pre><code class="python">observed()
+</code></pre>
+
+<p>Declares the random variables in <code>args</code> as observed, which means
+that data is available for them.</p>
+<p>The order in which variables are used here defines the order in which
+they will have to be passed in later when using methods like <code>.fit</code> or
+<code>.mcmc</code>. All variables in the model that are not declared as observed
+are automatically declared as <em>latent</em> and become the subject of
+inference.</p>
+<p><code>.observed</code> can only be called once per <code>Model</code> and is a requirement
+for calling <code>.initialize</code>.</p>
+<h2 id="parameters_6">Parameters</h2>
+<p>*args : random variables
+The random variables for which data is available.</p>
+<pre><code class="python">pdf()
+</code></pre>
+
+<p>The probability density function for observing a single entry
+of each random variable that has been declared as observed.</p>
+<p>This allows you to easily plot the probability density function.</p>
+<h2 id="parameters_7">Parameters</h2>
+<p>args : lists or ndarrays
+The entries for which we want to know the values of the probability
+density function. All arguments must have the same shape.</p>
+<h2 id="examples_1">Examples</h2>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>import numpy as np
+import matplotlib.pyplot as plt
+xs = np.linspace(-1, 1, 200)
+plt.plot(xs, model.pdf(xs))</p>
+</blockquote>
+</blockquote>
+</blockquote>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href=".." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="http://github.com/ibab/tensorprob" class="icon icon-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+    </span>
+</div>
+
+</body>
+</html>
